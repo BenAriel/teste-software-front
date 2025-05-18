@@ -2,44 +2,57 @@
 
 import { Canvas, useThree, useLoader } from '@react-three/fiber'
 import { Suspense, useState, useEffect, useMemo } from 'react'
-import { TextureLoader, DoubleSide, PerspectiveCamera } from 'three'
+import { TextureLoader, DoubleSide, PerspectiveCamera, Vector3 } from 'three'
 import Ouro from './ouro'
 import Criatura from './criatura'
 import { CriaturaDTO, DadosSimulacao } from '@/api'
 
-const escala = 0.003
-
 interface SimulacaoCanvasProps {
   dados: DadosSimulacao[]
+  onNovaSimulacao: () => void
 }
 
 function PlanoDeFundo() {
   const texturaFundo = useLoader(TextureLoader, '/cenario.jpg')
-  const { camera, size } = useThree()
+  const { camera } = useThree()
 
+  // Calcula as dimensões do plano para preencher exatamente a vista da câmera
   const { width, height } = useMemo(() => {
-    const aspect = size.width / size.height
-
     if ('fov' in camera) {
       const fov = (camera as PerspectiveCamera).fov
-      const z = Math.abs(camera.position.z - (-1))
-      const height = 2 * Math.tan((fov * Math.PI) / 360) * z
-      const width = height * aspect
-      return { width, height }
-    }
+      const distance = Math.abs(camera.position.z)
+      
+      // Calcula a altura visível na distância da câmera
+      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * distance
+      // Calcula a largura baseada no aspect ratio da câmera
+      const visibleWidth = visibleHeight * (camera as PerspectiveCamera).aspect
 
-    return { width: 10, height: 10 }
-  }, [camera, size])
+      return {
+        width: visibleWidth,
+        height: visibleHeight
+      }
+    }
+    return { width: 20, height: 20 }
+  }, [camera])
+
+  // Posiciona o plano exatamente na frente da câmera
+  const position = useMemo(() => {
+    const distance = camera.position.z
+    return new Vector3(0, 0, 0)
+  }, [camera.position.z])
 
   return (
-    <mesh position={[0, 0, -1]}>
+    <mesh position={position}>
       <planeGeometry args={[width, height]} />
-      <meshBasicMaterial map={texturaFundo} side={DoubleSide} />
+      <meshBasicMaterial 
+        map={texturaFundo} 
+        side={DoubleSide}
+      />
     </mesh>
   )
 }
 
-export default function SimulacaoCanvas({ dados }: SimulacaoCanvasProps) {
+export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCanvasProps) {
   const [iteracao, setIteracao] = useState(0)
 
   const { minX, maxX } = useMemo(() => {
@@ -90,14 +103,34 @@ export default function SimulacaoCanvas({ dados }: SimulacaoCanvasProps) {
   }
 
   return (
-    <div>
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-        <ambientLight />
+    <div className="w-full h-[80vh]">
+      <Canvas 
+        camera={{ 
+          position: [0, 0, 10],
+          fov: 50, // Reduz o FOV para uma vista mais "achatada"
+          near: 0.1,
+          far: 1000
+        }}
+      >
+        <ambientLight intensity={1.5} />
         <Suspense fallback={null}>
           <PlanoDeFundo />
-          {iter.criaturas.map((c: CriaturaDTO) => (
-            <Criatura key={c.id} criatura={c} minX={minX} maxX={maxX} />
-          ))}
+          {iter.criaturas.map((c: CriaturaDTO) => {
+            const proximaIteracao = dados[iteracao + 1]
+            const proximaCriatura = proximaIteracao?.criaturas.find(
+              (nextC: CriaturaDTO) => nextC.id === c.id
+            )
+            return (
+              <Criatura
+                key={c.id}
+                criatura={c}
+                minX={minX}
+                maxX={maxX}
+                iteracao={iter.iteracao}
+                proximaPosicao={proximaCriatura?.posicaox}
+              />
+            )
+          })}
           {iter.criaturas.map((c: CriaturaDTO) => (
             <Ouro
               key={`ouro-${c.id}`}
@@ -111,7 +144,7 @@ export default function SimulacaoCanvas({ dados }: SimulacaoCanvasProps) {
         </Suspense>
       </Canvas>
 
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex justify-center items-center gap-4 mt-4">
         <button
           onClick={antIteracao}
           className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
@@ -126,6 +159,13 @@ export default function SimulacaoCanvas({ dados }: SimulacaoCanvasProps) {
           disabled={iteracao === dados.length - 1}
         >
           Próxima ▶
+        </button>
+        <div className="border-l border-gray-300 h-8 mx-4"></div>
+        <button
+          onClick={onNovaSimulacao}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Nova Simulação
         </button>
       </div>
     </div>

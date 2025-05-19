@@ -35,7 +35,7 @@ const JUMP_FRAMES = [
   'Jump (12).png'  // Aterrissagem
 ];
 
-export default function Criatura({ criatura, minX, maxX, iteracao, proximaPosicao }: CriaturaProps) {
+export default function Criatura({ criatura, minX, maxX, iteracao}: CriaturaProps) {
   const ref = useRef<THREE.Sprite>(null)
   const groupRef = useRef<Group>(null)
   const [texture, setTexture] = useState<Texture | null>(null)

@@ -61,9 +61,13 @@ export default function Home() {
                 type="number"
                 id="quantidade"
                 min="1"
-                max="100"
+                max="10"
                 value={configuracao.quantidade}
-                onChange={(e) => setConfiguracao(prev => ({ ...prev, quantidade: parseInt(e.target.value) }))}
+                onChange={(e) => {
+                  let value = parseInt(e.target.value);
+                  if (value > 10) value = 10;
+                  setConfiguracao(prev => ({ ...prev, quantidade: value }));
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               />
             </div>

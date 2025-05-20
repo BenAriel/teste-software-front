@@ -103,70 +103,99 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   }
 
   return (
-    <div className="w-full h-[80vh]">
-      <Canvas 
-        camera={{ 
-          position: [0, 0, 10],
-          fov: 50, // Reduz o FOV para uma vista mais "achatada"
-          near: 0.1,
-          far: 1000
-        }}
-      >
-        <ambientLight intensity={1.5} />
-        <Suspense fallback={null}>
-          <PlanoDeFundo />
-          {iter.criaturas.map((c: CriaturaDTO) => {
-            const proximaIteracao = dados[iteracao + 1]
-            const proximaCriatura = proximaIteracao?.criaturas.find(
-              (nextC: CriaturaDTO) => nextC.id === c.id
-            )
-            return (
-              <Criatura
-                key={c.id}
-                criatura={c}
+    <div className="w-full h-[80vh] flex">
+      <div className="w-[300px] bg-gray-800 p-4 overflow-y-auto">
+        <h2 className="text-white text-xl font-bold mb-4">Informações das Criaturas</h2>
+        <div className="space-y-4">
+          {iter.criaturas.map((c: CriaturaDTO) => (
+            <div key={c.id} className="bg-gray-700 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: `hsl(${c.id * 30}, 70%, 50%)` }}></div>
+                <span className="text-white font-bold">Criatura {c.id}</span>
+              </div>
+              <div className="text-gray-300 text-sm space-y-1">
+                <p className="flex justify-between">
+                  <span>Posição:</span>
+                  <span className="font-mono">{c.posicaox.toFixed(2)}</span>
+                </p>
+                <p className="flex justify-between">
+                  <span>Ouro:</span>
+                  <span className="font-mono">{c.ouro}</span>
+                </p>
+                <p className="flex justify-between">
+                  <span>Roubou de:</span>
+                  <span className="font-mono">{c.idCriaturaRoubada || 'Ninguém'}</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex-1">
+        <Canvas 
+          camera={{ 
+            position: [0, 0, 10],
+            fov: 50,
+            near: 0.1,
+            far: 1000
+          }}
+        >
+          <ambientLight intensity={1.5} />
+          <Suspense fallback={null}>
+            <PlanoDeFundo />
+            {iter.criaturas.map((c: CriaturaDTO) => {
+              const proximaIteracao = dados[iteracao + 1]
+              const proximaCriatura = proximaIteracao?.criaturas.find(
+                (nextC: CriaturaDTO) => nextC.id === c.id
+              )
+              return (
+                <Criatura
+                  key={c.id}
+                  criatura={c}
+                  minX={minX}
+                  maxX={maxX}
+                  iteracao={iter.iteracao}
+                  proximaPosicao={proximaCriatura?.posicaox}
+                />
+              )
+            })}
+            {iter.criaturas.map((c: CriaturaDTO) => (
+              <Ouro
+                key={`ouro-${c.id}`}
+                de={c.idCriaturaRoubada}
+                para={c.id}
+                iter={iter.criaturas}
                 minX={minX}
                 maxX={maxX}
-                iteracao={iter.iteracao}
-                proximaPosicao={proximaCriatura?.posicaox}
               />
-            )
-          })}
-          {iter.criaturas.map((c: CriaturaDTO) => (
-            <Ouro
-              key={`ouro-${c.id}`}
-              de={c.idCriaturaRoubada}
-              para={c.id}
-              iter={iter.criaturas}
-              minX={minX}
-              maxX={maxX}
-            />
-          ))}
-        </Suspense>
-      </Canvas>
+            ))}
+          </Suspense>
+        </Canvas>
 
-      <div className="flex justify-center items-center gap-4 mt-4">
-        <button
-          onClick={antIteracao}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-          disabled={iteracao === 0}
-        >
-          ◀ Anterior
-        </button>
-        <span className="py-2">Iteração: {iter.iteracao}</span>
-        <button
-          onClick={proxIteracao}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-          disabled={iteracao === dados.length - 1}
-        >
-          Próxima ▶
-        </button>
-        <div className="border-l border-gray-300 h-8 mx-4"></div>
-        <button
-          onClick={onNovaSimulacao}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          Nova Simulação
-        </button>
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <button
+            onClick={antIteracao}
+            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            disabled={iteracao === 0}
+          >
+            ◀ Anterior
+          </button>
+          <span className="py-2">Iteração: {iter.iteracao}</span>
+          <button
+            onClick={proxIteracao}
+            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            disabled={iteracao === dados.length - 1}
+          >
+            Próxima ▶
+          </button>
+          <div className="border-l border-gray-300 h-8 mx-4"></div>
+          <button
+            onClick={onNovaSimulacao}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Nova Simulação
+          </button>
+        </div>
       </div>
     </div>
   )

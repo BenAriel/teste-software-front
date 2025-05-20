@@ -5,6 +5,7 @@ export interface CriaturaDTO {
     ouro: number
     posicaox: number
     idCriaturaRoubada: number
+    foiRoubado: boolean
 }
 
 export interface DadosSimulacao {

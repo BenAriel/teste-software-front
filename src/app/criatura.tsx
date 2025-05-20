@@ -118,13 +118,15 @@ export default function Criatura({ criatura, minX, maxX, iteracao, proximaPosica
         <spriteMaterial map={texture} />
       </sprite>
       <Text
-        position={[0, 2, 0]}
-        fontSize={0.5}
+        position={[0, 2.5, 0]}
+        fontSize={0.8}
         color="white"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.1}
-        outlineColor="black"
+        outlineWidth={0.15}
+        outlineColor="#FFFFFF"
+        strokeWidth={0.5}
+        strokeColor="#000000"
       >
         {criatura.id}
       </Text>

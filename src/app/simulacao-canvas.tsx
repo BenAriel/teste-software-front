@@ -74,11 +74,13 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   useEffect(() => {
     if (!dados || dados.length === 0) return;
     if (iteracao >= dados.length - 1) return;
+    
     const timer = setTimeout(() => {
-      setIteracao((prev) => Math.min(prev + 1, dados.length - 1));
+      setIteracao((prev) => prev + 1);
     }, 3000);
+    
     return () => clearTimeout(timer);
-  }, [iteracao, dados]);
+  }, [iteracao, dados.length]);
 
   if (!dados || dados.length === 0) {
     console.error("Dados não recebidos ou array vazio no SimulacaoCanvas")
@@ -167,13 +169,14 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
           </Suspense>
         </Canvas>
 
-      <div className="flex justify-center items-center gap-4 mt-4">
-        <button
-          onClick={onNovaSimulacao}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          Nova Simulação
-        </button>
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <button
+            onClick={onNovaSimulacao}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Nova Simulação
+          </button>
+        </div>
       </div>
     </div>
   )

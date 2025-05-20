@@ -72,10 +72,13 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   }, [dados])
 
   useEffect(() => {
-    if (dados && iteracao >= dados.length) {
-      setIteracao(0)
-    }
-  }, [dados, iteracao])
+    if (!dados || dados.length === 0) return;
+    if (iteracao >= dados.length - 1) return;
+    const timer = setTimeout(() => {
+      setIteracao((prev) => Math.min(prev + 1, dados.length - 1));
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [iteracao, dados]);
 
   if (!dados || dados.length === 0) {
     console.error("Dados não recebidos ou array vazio no SimulacaoCanvas")
@@ -92,14 +95,6 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   if (!Array.isArray(iter.criaturas)) {
     console.error("Criaturas não é um array:", iter)
     return <div>Dados de criaturas inválidos.</div>
-  }
-
-  const proxIteracao = () => {
-    if (iteracao < dados.length - 1) setIteracao(iteracao + 1)
-  }
-
-  const antIteracao = () => {
-    if (iteracao > 0) setIteracao(iteracao - 1)
   }
 
   return (
@@ -172,30 +167,13 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
           </Suspense>
         </Canvas>
 
-        <div className="flex justify-center items-center gap-4 mt-4">
-          <button
-            onClick={antIteracao}
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-            disabled={iteracao === 0}
-          >
-            ◀ Anterior
-          </button>
-          <span className="py-2">Iteração: {iter.iteracao}</span>
-          <button
-            onClick={proxIteracao}
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-            disabled={iteracao === dados.length - 1}
-          >
-            Próxima ▶
-          </button>
-          <div className="border-l border-gray-300 h-8 mx-4"></div>
-          <button
-            onClick={onNovaSimulacao}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          >
-            Nova Simulação
-          </button>
-        </div>
+      <div className="flex justify-center items-center gap-4 mt-4">
+        <button
+          onClick={onNovaSimulacao}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Nova Simulação
+        </button>
       </div>
     </div>
   )

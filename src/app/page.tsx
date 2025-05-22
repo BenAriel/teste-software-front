@@ -1,7 +1,7 @@
 // app/page.tsx ou equivalente
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import SimulacaoCanvas from './simulacao-canvas'
 import { fetchdadosSimulacao, DadosSimulacao } from '@/api'
 
@@ -80,7 +80,7 @@ export default function Home() {
                 type="number"
                 id="iteracoes"
                 min="1"
-                max="100"
+                max="1000"
                 value={configuracao.iteracoes}
                 onChange={(e) => setConfiguracao(prev => ({ ...prev, iteracoes: parseInt(e.target.value) }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"

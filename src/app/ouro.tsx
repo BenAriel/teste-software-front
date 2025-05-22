@@ -21,7 +21,6 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
   const ref = useRef<Sprite>(null)
   const [start, setStart] = useState<Vector3 | null>(null)
   const [end, setEnd] = useState<Vector3 | null>(null)
-  const [t, setT] = useState(0)
   const [texture, setTexture] = useState<Texture | null>(null)
 
   useEffect(() => {
@@ -63,8 +62,6 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
         }
       }
     )
-    
-    setT(0)
   }, [de, para, iter, minX, maxX])
 
   useEffect(() => {
@@ -75,12 +72,7 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
 
   useFrame(() => {
     if (start && end && ref.current) {
-      setT((prev) => {
-        const novoT = Math.min(prev + 0.03, 1)
-        const atual = start.clone().lerp(end, novoT)
-        ref.current!.position.copy(atual)
-        return novoT
-      })
+      // Animação da posição da sprite pode ser feita aqui se necessário
     }
   })
 

@@ -14,32 +14,25 @@ interface SimulacaoCanvasProps {
 
 function PlanoDeFundo() {
   const texturaFundo = useLoader(TextureLoader, '/cenario.jpg')
-  const { camera } = useThree()
+  const { camera, size } = useThree()
 
   // Calcula as dimensões do plano para preencher exatamente a vista da câmera
   const { width, height } = useMemo(() => {
+    const aspect = size.width / size.height
     if ('fov' in camera) {
       const fov = (camera as PerspectiveCamera).fov
-      const distance = Math.abs(camera.position.z)
-      
-      // Calcula a altura visível na distância da câmera
-      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * distance
-      // Calcula a largura baseada no aspect ratio da câmera
-      const visibleWidth = visibleHeight * (camera as PerspectiveCamera).aspect
-
-      return {
-        width: visibleWidth,
-        height: visibleHeight
-      }
+      const z = Math.abs(camera.position.z - (-1))
+      const height = 2 * Math.tan((fov * Math.PI) / 360) * z
+      const width = height * aspect
+      return { width, height }
     }
-    return { width: 20, height: 20 }
-  }, [camera])
+    return { width: 10, height: 10 }
+  }, [camera, size])
 
   // Posiciona o plano exatamente na frente da câmera
   const position = useMemo(() => {
-    const distance = camera.position.z
     return new Vector3(0, 0, 0)
-  }, [camera.position.z])
+  }, [])
 
   return (
     <mesh position={position}>
@@ -74,13 +67,11 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   useEffect(() => {
     if (!dados || dados.length === 0) return;
     if (iteracao >= dados.length - 1) return;
-    
     const timer = setTimeout(() => {
       setIteracao((prev) => prev + 1);
     }, 3000);
-    
     return () => clearTimeout(timer);
-  }, [iteracao, dados.length]);
+  }, [iteracao, dados, dados.length]);
 
   if (!dados || dados.length === 0) {
     console.error("Dados não recebidos ou array vazio no SimulacaoCanvas")

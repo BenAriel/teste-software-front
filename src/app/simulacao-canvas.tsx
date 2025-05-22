@@ -73,7 +73,6 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
     }, 3000);
     return () => clearTimeout(timer);
   }, [iteracao, dados, dados.length]);
-  }, [iteracao, dados, dados.length]);
 
   if (!dados || dados.length === 0) {
     console.error("Dados não recebidos ou array vazio no SimulacaoCanvas")

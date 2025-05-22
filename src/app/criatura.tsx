@@ -111,7 +111,6 @@ export default function Criatura({ criatura, minX, maxX, iteracao}: CriaturaProp
       groupRef.current.position.y = posicaoBaseY + idleMovement
     }
   })
-
   return texture ? (
     <group ref={groupRef}>
       <sprite ref={ref} scale={[3, 3, 1]}>
@@ -120,13 +119,15 @@ export default function Criatura({ criatura, minX, maxX, iteracao}: CriaturaProp
       <Text
         position={[0, 2.5, 0]}
         fontSize={0.8}
-        color="white"
+        color={`hsl(${criatura.id * 30}, 70%, 50%)`}
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.15}
         outlineColor="#FFFFFF"
         strokeWidth={0.5}
-        strokeColor="#000000"
+        strokeColor={`hsl(${criatura.id * 30}, 70%, 50%)`}
+
+        
       >
         {criatura.id}
       </Text>

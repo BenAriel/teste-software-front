@@ -1,7 +1,7 @@
 // app/page.tsx ou equivalente
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import SimulacaoCanvas from './simulacao-canvas'
 import { fetchdadosSimulacao, DadosSimulacao } from '@/api'
 

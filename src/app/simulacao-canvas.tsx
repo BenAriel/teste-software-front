@@ -20,13 +20,8 @@ function PlanoDeFundo() {
   const { width, height } = useMemo(() => {
     if ('fov' in camera) {
       const fov = (camera as PerspectiveCamera).fov
-      const distance = Math.abs(camera.position.z)
-      
-      // Calcula a altura visível na distância da câmera
-      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * distance
-      // Calcula a largura baseada no aspect ratio da câmera
+      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * Math.abs(camera.position.z)
       const visibleWidth = visibleHeight * (camera as PerspectiveCamera).aspect
-
       return {
         width: visibleWidth,
         height: visibleHeight
@@ -37,7 +32,6 @@ function PlanoDeFundo() {
 
   // Posiciona o plano exatamente na frente da câmera
   const position = useMemo(() => {
-    const distance = camera.position.z
     return new Vector3(0, 0, 0)
   }, [camera.position.z])
 
@@ -74,13 +68,11 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   useEffect(() => {
     if (!dados || dados.length === 0) return;
     if (iteracao >= dados.length - 1) return;
-    
     const timer = setTimeout(() => {
       setIteracao((prev) => prev + 1);
     }, 3000);
-    
     return () => clearTimeout(timer);
-  }, [iteracao, dados.length]);
+  }, [iteracao, dados, dados.length]);
 
   if (!dados || dados.length === 0) {
     console.error("Dados não recebidos ou array vazio no SimulacaoCanvas")
@@ -102,7 +94,7 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
   return (
     <div className="w-full h-[80vh] flex">
       <div className="w-[300px] bg-gray-800 p-4 overflow-y-auto">
-        <h2 className="text-white text-xl font-bold mb-4">Informações das Criaturas</h2>
+        <h2 className="text-white text-xl font-bold mb-4">Informações das Criaturas na iteração {iter.iteracao}</h2>
         <div className="space-y-4">
           {iter.criaturas.map((c: CriaturaDTO) => (
             <div key={c.id} className="bg-gray-700 p-3 rounded-lg">

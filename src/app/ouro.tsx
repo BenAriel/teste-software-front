@@ -21,7 +21,7 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
   const ref = useRef<Sprite>(null)
   const [start, setStart] = useState<Vector3 | null>(null)
   const [end, setEnd] = useState<Vector3 | null>(null)
-  const [t, setT] = useState(0)
+  const [, setT] = useState(0)
   const [texture, setTexture] = useState<Texture | null>(null)
 
   useEffect(() => {

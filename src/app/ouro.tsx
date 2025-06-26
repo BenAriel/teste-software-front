@@ -10,14 +10,16 @@ interface OuroProps {
   iter: CriaturaDTO[]
   minX: number
   maxX: number
+  targetMin: number
+  targetMax: number
 }
 
-function normalizarX(x: number, minX: number, maxX: number, targetMin = -10, targetMax = 10) {
+function normalizarX(x: number, minX: number, maxX: number, targetMin: number, targetMax: number) {
   if (maxX === minX) return 0;
   return ((x - minX) / (maxX - minX)) * (targetMax - targetMin) + targetMin;
 }
 
-export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
+export default function Ouro({ de, para, iter, minX, maxX, targetMin, targetMax }: OuroProps) {
   const ref = useRef<Sprite>(null)
   const [start, setStart] = useState<Vector3 | null>(null)
   const [end, setEnd] = useState<Vector3 | null>(null)
@@ -40,8 +42,8 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
     const destino = iter.find((c) => c.id === para)
 
     if (origem && destino) {
-      setStart(new Vector3(normalizarX(origem.posicaox, minX, maxX), -1.5, 0))
-      setEnd(new Vector3(normalizarX(destino.posicaox, minX, maxX), -1.5, 0))
+      setStart(new Vector3(normalizarX(origem.posicaox, minX, maxX, targetMin, targetMax), -1.5, 0))
+      setEnd(new Vector3(normalizarX(destino.posicaox, minX, maxX, targetMin, targetMax), -1.5, 0))
     } else {
       console.log(`Criatura de origem (${de}) ou destino (${para}) não encontrada`)
     }
@@ -65,7 +67,7 @@ export default function Ouro({ de, para, iter, minX, maxX }: OuroProps) {
     )
     
     setT(0)
-  }, [de, para, iter, minX, maxX])
+  }, [de, para, iter, minX, maxX, targetMin, targetMax])
 
   useEffect(() => {
     if (ref.current) {

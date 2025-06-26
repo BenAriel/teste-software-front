@@ -12,37 +12,92 @@ interface SimulacaoCanvasProps {
   onNovaSimulacao: () => void
 }
 
-function PlanoDeFundo() {
+function PlanoDeFundo({ width, height }: { width: number; height: number }) {
   const texturaFundo = useLoader(TextureLoader, '/cenario.jpg')
-  const { camera } = useThree()
-
-  // Calcula as dimensões do plano para preencher exatamente a vista da câmera
-  const { width, height } = useMemo(() => {
-    if ('fov' in camera) {
-      const fov = (camera as PerspectiveCamera).fov
-      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * Math.abs(camera.position.z)
-      const visibleWidth = visibleHeight * (camera as PerspectiveCamera).aspect
-      return {
-        width: visibleWidth,
-        height: visibleHeight
-      }
-    }
-    return { width: 20, height: 20 }
-  }, [camera])
-
-  // Posiciona o plano exatamente na frente da câmera
-  const position = useMemo(() => {
-    return new Vector3(0, 0, 0)
-  }, [camera.position.z])
 
   return (
-    <mesh position={position}>
+    <mesh position={new Vector3(0, 0, 0)}>
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial 
         map={texturaFundo} 
         side={DoubleSide}
       />
     </mesh>
+  )
+}
+
+function Scene({
+  dados,
+  iteracao,
+  minX,
+  maxX
+}: {
+  dados: DadosSimulacao[]
+  iteracao: number
+  minX: number
+  maxX: number
+}) {
+  const { camera } = useThree()
+
+  const { width, height } = useMemo(() => {
+    if ('fov' in camera) {
+      const fov = (camera as PerspectiveCamera).fov
+      const visibleHeight = 2 * Math.tan((fov * Math.PI / 180) / 2) * Math.abs(camera.position.z)
+      const visibleWidth = visibleHeight * (camera as PerspectiveCamera).aspect
+      return { width: visibleWidth, height: visibleHeight }
+    }
+    return { width: 20, height: 20 }
+  }, [camera])
+
+  const targetMin = -width / 2 + 1.5
+  const targetMax = width / 2 - 1.5
+
+  const iter = dados[iteracao]
+
+  if (!iter) {
+    console.error(`Iteração ${iteracao} não encontrada em:`, dados)
+    return null
+  }
+
+  if (!Array.isArray(iter.criaturas)) {
+    console.error("Criaturas não é um array:", iter)
+    return null
+  }
+
+  return (
+    <>
+      <PlanoDeFundo width={width} height={height} />
+      {iter.criaturas.map((c: CriaturaDTO) => {
+        const proximaIteracao = dados[iteracao + 1]
+        const proximaCriatura = proximaIteracao?.criaturas.find(
+          (nextC: CriaturaDTO) => nextC.id === c.id
+        )
+        return (
+          <Criatura
+            key={c.id}
+            criatura={c}
+            minX={minX}
+            maxX={maxX}
+            iteracao={iter.iteracao}
+            proximaPosicao={proximaCriatura?.posicaox}
+            targetMin={targetMin}
+            targetMax={targetMax}
+          />
+        )
+      })}
+      {iter.criaturas.map((c: CriaturaDTO) => (
+        <Ouro
+          key={`ouro-${c.id}`}
+          de={c.idCriaturaRoubada}
+          para={c.id}
+          iter={iter.criaturas}
+          minX={minX}
+          maxX={maxX}
+          targetMin={targetMin}
+          targetMax={targetMax}
+        />
+      ))}
+    </>
   )
 }
 
@@ -131,33 +186,7 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
         >
           <ambientLight intensity={1.5} />
           <Suspense fallback={null}>
-            <PlanoDeFundo />
-            {iter.criaturas.map((c: CriaturaDTO) => {
-              const proximaIteracao = dados[iteracao + 1]
-              const proximaCriatura = proximaIteracao?.criaturas.find(
-                (nextC: CriaturaDTO) => nextC.id === c.id
-              )
-              return (
-                <Criatura
-                  key={c.id}
-                  criatura={c}
-                  minX={minX}
-                  maxX={maxX}
-                  iteracao={iter.iteracao}
-                  proximaPosicao={proximaCriatura?.posicaox}
-                />
-              )
-            })}
-            {iter.criaturas.map((c: CriaturaDTO) => (
-              <Ouro
-                key={`ouro-${c.id}`}
-                de={c.idCriaturaRoubada}
-                para={c.id}
-                iter={iter.criaturas}
-                minX={minX}
-                maxX={maxX}
-              />
-            ))}
+            <Scene dados={dados} iteracao={iteracao} minX={minX} maxX={maxX} />
           </Suspense>
         </Canvas>
 

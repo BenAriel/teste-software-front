@@ -1,7 +1,6 @@
-// app/page.tsx ou equivalente
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { login, registrar, deleteAccount } from '@/api'
 
@@ -13,13 +12,6 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [mode, setMode] = useState<'login' | 'register' | 'delete'>('login')
   const router = useRouter()
-
-  useEffect(() => {
-    // If the user is already logged in, redirect to the simulation page
-    if (localStorage.getItem('user')) {
-      router.push('/simulation')
-    }
-  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,9 +29,12 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
+      // The backend returns UsuarioDTO, not a token.
+      // Assuming successful request means login is successful.
       await login({ login: username, senha: password })
+      // Storing username to indicate logged-in state for this example
       localStorage.setItem('user', username)
-      router.push('/simulation')
+      router.push('/')
     } catch (err) {
       console.error('Login failed:', err)
       setError('Falha no login. Verifique suas credenciais.')
@@ -49,9 +44,10 @@ export default function LoginPage() {
   const handleRegister = async () => {
     try {
       await registrar({ login: username, senha: password, avatar: avatar })
+      // After successful registration, log in the user automatically
       await login({ login: username, senha: password })
       localStorage.setItem('user', username)
-      router.push('/simulation')
+      router.push('/')
     } catch (err) {
       console.error('Registration failed:', err)
       setError('Falha no registro. O nome de usuário pode já estar em uso.')
@@ -60,10 +56,11 @@ export default function LoginPage() {
 
   const handleDelete = async () => {
     try {
+      // The controller only expects the login (username) as a path variable
       await deleteAccount(username)
       localStorage.removeItem('user')
       setMode('login')
-      setSuccessMessage('Conta deletada com sucesso.')
+      setSuccessMessage('Usuário excluído com sucesso.')
     } catch (err) {
       setError('Falha ao deletar a conta. Verifique suas credenciais.')
     }

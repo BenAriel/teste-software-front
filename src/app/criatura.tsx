@@ -12,9 +12,11 @@ interface CriaturaProps {
   maxX: number
   iteracao: number
   proximaPosicao?: number
+  targetMin: number
+  targetMax: number
 }
 
-function normalizarX(x: number, minX: number, maxX: number, targetMin = -10, targetMax = 10) {
+function normalizarX(x: number, minX: number, maxX: number, targetMin: number, targetMax: number) {
   if (maxX === minX) return 0;
   return ((x - minX) / (maxX - minX)) * (targetMax - targetMin) + targetMin;
 }
@@ -35,7 +37,7 @@ const JUMP_FRAMES = [
   'Jump (12).png'  // Aterrissagem
 ];
 
-export default function Criatura({ criatura, minX, maxX, iteracao}: CriaturaProps) {
+export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, targetMax }: CriaturaProps) {
   const ref = useRef<THREE.Sprite>(null)
   const groupRef = useRef<Group>(null)
   const [texture, setTexture] = useState<Texture | null>(null)
@@ -77,7 +79,7 @@ export default function Criatura({ criatura, minX, maxX, iteracao}: CriaturaProp
     const posicaoBaseY = -1.5 // Ajuste este valor para mover as criaturas para cima (-) ou para baixo (+)
 
     // Sempre atualiza para a posição atual correta
-    const posicaoAtual = normalizarX(criatura.posicaox, minX, maxX)
+    const posicaoAtual = normalizarX(criatura.posicaox, minX, maxX, targetMin, targetMax)
     groupRef.current.position.x = posicaoAtual
 
     if (isJumping) {

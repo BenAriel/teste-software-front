@@ -14,6 +14,8 @@ interface CriaturaProps {
   proximaPosicao?: number
   targetMin: number
   targetMax: number
+  scale?: number
+  displayText?: string
 }
 
 function normalizarX(x: number, minX: number, maxX: number, targetMin: number, targetMax: number) {
@@ -21,23 +23,22 @@ function normalizarX(x: number, minX: number, maxX: number, targetMin: number, t
   return ((x - minX) / (maxX - minX)) * (targetMax - targetMin) + targetMin;
 }
 
-// Sequência de frames para a animação de pulo
 const JUMP_FRAMES = [
-  'Jump (1).png',  // Preparação para o pulo
+  'Jump (1).png',
   'Jump (2).png',
   'Jump (3).png',
   'Jump (4).png',
-  'Jump (5).png',  // Subindo
+  'Jump (5).png', 
   'Jump (6).png',
-  'Jump (7).png',  // Ponto mais alto
+  'Jump (7).png', 
   'Jump (8).png',
-  'Jump (9).png',  // Descendo
+  'Jump (9).png',
   'Jump (10).png',
   'Jump (11).png',
-  'Jump (12).png'  // Aterrissagem
+  'Jump (12).png'
 ];
 
-export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, targetMax }: CriaturaProps) {
+export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, targetMax, scale = 3, displayText }: CriaturaProps) {
   const ref = useRef<THREE.Sprite>(null)
   const groupRef = useRef<Group>(null)
   const [texture, setTexture] = useState<Texture | null>(null)
@@ -45,10 +46,10 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
   const [isJumping, setIsJumping] = useState(false)
   const [jumpStartTime, setJumpStartTime] = useState(0)
   const [lastIteracao, setLastIteracao] = useState(iteracao)
-  const jumpDuration = 0.5 // Reduzido para movimento mais rápido
+  const jumpDuration = 0.8
 
   useEffect(() => {
-    // Detecta mudança real de iteração
+    
     if (iteracao !== lastIteracao) {
       setIsJumping(true)
       setJumpStartTime(Date.now())
@@ -68,17 +69,17 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.scale.set(3, 3, 1)
+      ref.current.scale.set(scale, scale, 1)
     }
-  }, [texture])
+  }, [texture, scale])
 
   useFrame(({ clock }) => {
     if (!groupRef.current || !criatura) return
 
-    // Define a altura base das criaturas
-    const posicaoBaseY = -1.5 // Ajuste este valor para mover as criaturas para cima (-) ou para baixo (+)
+    const groundY = -3;
+    const posicaoBaseY = groundY + (scale / 2);
 
-    // Sempre atualiza para a posição atual correta
+
     const posicaoAtual = normalizarX(criatura.posicaox, minX, maxX, targetMin, targetMax)
     groupRef.current.position.x = posicaoAtual
 
@@ -87,11 +88,9 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
       const jumpElapsed = (currentTime - jumpStartTime) / 1000
       const jumpProgress = Math.min(jumpElapsed / jumpDuration, 1)
 
-      // Altura do pulo mais rápida e natural, partindo da posição base
       const jumpHeight = Math.sin(Math.PI * jumpProgress) * 1.5
       groupRef.current.position.y = posicaoBaseY + jumpHeight
 
-      // Atualiza o frame da animação
       const frameIndex = Math.min(
         Math.floor(jumpProgress * JUMP_FRAMES.length),
         JUMP_FRAMES.length - 1
@@ -102,36 +101,35 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
         loadFrame(JUMP_FRAMES[frameIndex])
       }
 
-      // Finaliza o pulo
       if (jumpProgress >= 1) {
         setIsJumping(false)
         loadFrame('Idle1.png')
       }
     } else {
-      // Movimento suave quando não está pulando, também partindo da posição base
+
       const idleMovement = Math.sin(clock.getElapsedTime() * 2) * 0.1
       groupRef.current.position.y = posicaoBaseY + idleMovement
     }
   })
   return texture ? (
     <group ref={groupRef}>
-      <sprite ref={ref} scale={[3, 3, 1]}>
+      <sprite ref={ref} scale={[scale, scale, 1]}>
         <spriteMaterial map={texture} />
       </sprite>
       <Text
-        position={[0, 2.5, 0]}
+        position={[0, scale / 2 + 0.5, 0]}
         fontSize={0.8}
-        color={`hsl(${criatura.id * 30}, 70%, 50%)`}
+        color={displayText ? "white" : `hsl(${criatura.id * 30}, 70%, 50%)`}
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.15}
         outlineColor="#FFFFFF"
         strokeWidth={0.5}
-        strokeColor={`hsl(${criatura.id * 30}, 70%, 50%)`}
+        strokeColor={displayText ? "white" : `hsl(${criatura.id * 30}, 70%, 50%)`}
 
         
       >
-        {criatura.id}
+        {displayText ?? criatura.id}
       </Text>
     </group>
   ) : null

@@ -7,12 +7,27 @@ export interface CriaturaDTO {
     ouro: number
     posicaox: number
     idCriaturaRoubada: number
-    foiRoubado: boolean
+}
+
+export interface GuardiaoDTO {
+  id: number;
+  ouro: number;
+  posicaox: number;
+  idClusterEliminado: number;
+}
+
+export interface ClusterDTO {
+  id: number;
+  ouro: number;
+  posicaox: number;
 }
 
 export interface DadosSimulacao {
     iteracao: number
     criaturas: CriaturaDTO[]
+    clusters: ClusterDTO[];
+    guardiao: GuardiaoDTO;
+    simulacaoBemSucedida: boolean;
 }
 
 export interface resquest {

@@ -95,15 +95,17 @@ function Scene({
       {iter.clusters?.map((cluster: ClusterDTO) => {
         const proximaIteracao = dados[iteracao + 1]
         const proximoCluster = proximaIteracao?.clusters.find(
-          (nextC: ClusterDTO) => nextC.id === cluster.id
+          (nextC: ClusterDTO) => nextC.idCluster === cluster.idCluster
         )
         const clusterAsCriatura = {
           ...cluster,
-          idCriaturaRoubada: -1
+          id: cluster.idCluster, 
+          ouro: cluster.ouroTotal,
+          idCriaturaRoubada: -1,
         }
         return (
           <Criatura
-            key={`cluster-${cluster.id}`}
+            key={`cluster-${cluster.idCluster}`}
             criatura={clusterAsCriatura}
             minX={minX}
             maxX={maxX}
@@ -234,10 +236,10 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
             <div className="mt-6">
               <h3 className="text-white text-lg font-bold mb-2">Clusters</h3>
               {iter.clusters.map((c: ClusterDTO) => (
-                <div key={c.id} className="bg-gray-700 p-3 rounded-lg">
+                <div key={c.idCluster} className="bg-gray-700 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-4 h-4 rounded-full bg-purple-500"></div>
-                    <span className="text-white font-bold">Cluster {c.id}</span>
+                    <span className="text-white font-bold">Cluster {c.idCluster}</span>
                   </div>
                   <div className="text-gray-300 text-sm space-y-1">
                     <p className="flex justify-between">
@@ -246,7 +248,11 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
                     </p>
                     <p className="flex justify-between">
                       <span>Ouro:</span>
-                      <span className="font-mono">{c.ouro}</span>
+                      <span className="font-mono">{c.ouroTotal}</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span>Criaturas:</span>
+                      <span className="font-mono">{c.idsCriaturas.join(', ')}</span>
                     </p>
                   </div>
                 </div>

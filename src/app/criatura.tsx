@@ -7,7 +7,7 @@ import * as THREE from 'three'
 import { Text } from '@react-three/drei'
 
 interface CriaturaProps {
-  criatura: CriaturaDTO
+  criatura: CriaturaDTO & { type?: string }
   minX: number
   maxX: number
   iteracao: number
@@ -47,6 +47,8 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
   const [jumpStartTime, setJumpStartTime] = useState(0)
   const [lastIteracao, setLastIteracao] = useState(iteracao)
   const jumpDuration = 0.8
+
+  const isCluster = 'idsCriaturas' in criatura;
 
   useEffect(() => {
     
@@ -119,17 +121,15 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
       <Text
         position={[0, scale / 2 + 0.5, 0]}
         fontSize={0.8}
-        color={displayText ? "white" : `hsl(${criatura.id * 30}, 70%, 50%)`}
+        color={`hsl(${criatura.id * 30}, 70%, 50%)`}
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.15}
         outlineColor="#FFFFFF"
         strokeWidth={0.5}
-        strokeColor={displayText ? "white" : `hsl(${criatura.id * 30}, 70%, 50%)`}
-
-        
+        strokeColor={`hsl(${criatura.id * 30}, 70%, 50%)`}
       >
-        {displayText ?? criatura.id}
+        {criatura.id}
       </Text>
     </group>
   ) : null

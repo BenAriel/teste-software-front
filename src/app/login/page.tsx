@@ -29,10 +29,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      // The backend returns UsuarioDTO, not a token.
-      // Assuming successful request means login is successful.
       await login({ login: username, senha: password })
-      // Storing username to indicate logged-in state for this example
       localStorage.setItem('user', username)
       router.push('/')
     } catch (err) {
@@ -44,7 +41,7 @@ export default function LoginPage() {
   const handleRegister = async () => {
     try {
       await registrar({ login: username, senha: password, avatar: avatar })
-      // After successful registration, log in the user automatically
+      
       await login({ login: username, senha: password })
       localStorage.setItem('user', username)
       router.push('/')
@@ -56,7 +53,7 @@ export default function LoginPage() {
 
   const handleDelete = async () => {
     try {
-      // The controller only expects the login (username) as a path variable
+      
       await deleteAccount(username)
       localStorage.removeItem('user')
       setMode('login')

@@ -1,4 +1,3 @@
-// app/page.tsx ou equivalente
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // If the user is already logged in, redirect to the simulation page
     if (localStorage.getItem('user')) {
       router.push('/simulation')
     }

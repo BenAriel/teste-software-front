@@ -27,13 +27,11 @@ export default function Ouro({ de, para, iter, minX, maxX, targetMin, targetMax 
   const [texture, setTexture] = useState<Texture | null>(null)
 
   useEffect(() => {
-    // Proteção contra undefined
     if (!Array.isArray(iter) || iter.length === 0) {
       console.log("Array de criaturas vazio ou inválido")
       return
     }
 
-    // Não exibir ouro quando não há roubo
     if (de === null || de === undefined) {
       return
     }
@@ -71,7 +69,7 @@ export default function Ouro({ de, para, iter, minX, maxX, targetMin, targetMax 
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.scale.set(0.75, 0.75 , 1) // Diminuindo a escala das moedas para 0.5
+      ref.current.scale.set(0.75, 0.75 , 1)
     }
   }, [texture])
 

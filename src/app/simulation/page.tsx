@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SimulacaoCanvas from '../simulacao-canvas'
 import { fetchdadosSimulacao, DadosSimulacao } from '@/api'
+import Link from 'next/link'
 
 export default function SimulationPage() {
   const [dados, setDados] = useState<DadosSimulacao[] | null>(null)
@@ -32,14 +33,32 @@ export default function SimulationPage() {
     e.preventDefault()
     setLoading(true)
     setErro(null)
-    setSimulacaoIniciada(true)
+
+    const loginUsuario = localStorage.getItem('user')
+    if (!loginUsuario) {
+      setErro('Usuário não autenticado. Por favor, faça o login novamente.')
+      setLoading(false)
+      router.push('/')
+      return
+    }
 
     try {
-      const resposta = await fetchdadosSimulacao(configuracao)
+      setSimulacaoIniciada(true)
+
+      const parametros = {
+        ...configuracao,
+        loginUsuario: loginUsuario
+      }
+
+      const resposta = await fetchdadosSimulacao(parametros)
       setDados(resposta)
     } catch (e: unknown) {
       console.error(e)
-      setErro('Erro ao carregar dados da simulação.')
+      if (e instanceof Error) {
+        setErro(e.message)
+      } else {
+        setErro('Erro ao carregar dados da simulação.')
+      }
     } finally {
       setLoading(false)
     }
@@ -63,12 +82,17 @@ export default function SimulationPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-center text-2xl font-bold text-white">Simulação de Criaturas Saltitantes</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
-        >
-          Logout
-        </button>
+        <div>
+          <Link href="/estatisticas" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors mr-4">
+            Estatísticas
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       
       {!simulacaoIniciada ? (

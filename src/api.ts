@@ -46,22 +46,27 @@ export interface LoginDTO {
   senha: string;
 }
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL + '/v1',
-  validateStatus: (status) => status >= 200 && status < 300,
+  validateStatus: (status) => status >= 200 && status < 500, // Aceita respostas com erro
 });
 
-export async function fetchdadosSimulacao(resquest: resquest ): Promise<DadosSimulacao[]> {
+export async function fetchdadosSimulacao(parametros: { quantidade: number; iteracoes: number; loginUsuario: string }): Promise<DadosSimulacao[]> {
     try {
-        console.log('Requisição:', resquest);
-        const response = await api.post('/simular', resquest);
-        if (response.status === 200) {
-            return response.data;
-        } else {
-            throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+        const response = await api.post('/simular', parametros);
+
+        if (response.status >= 400) {
+            // Se a resposta for texto (erro), lança um erro com a mensagem
+            if (typeof response.data === 'string') {
+                throw new Error(response.data);
+            }
+            // Se for um objeto de erro JSON, extrai a mensagem
+            throw new Error(response.data.message || 'Erro na simulação');
         }
+
+        return response.data;
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao chamar a API de simulação:', error);
         throw error;
     }
 }
@@ -101,4 +106,45 @@ export const deleteAccount = async (login: string) => {
     throw new Error(error.detail || 'Delete failed')
   }
   return response.text()
+}
+
+export interface EstatisticasDTO {
+  totalOuroSistema: number;
+  totalCriaturas: number;
+  totalClusters: number;
+  totalSimulacoes: number;
+  totalTurnos: number;
+}
+
+export interface UsuarioDTO {
+  login: string;
+  avatar: string; // Adicionado o campo avatar
+  pontuacao: number;
+  totalSimulacoes: number;
+  taxaSucesso: number;
+}
+
+// Define a estrutura da resposta completa do endpoint de estatísticas
+export interface EstatisticasComRankingDTO {
+  pontuacaoUsuarios: UsuarioDTO[];
+  quantidadeTotalSimulacoes: number;
+  mediaSimulacoesSucessoUsuario: number;
+  mediaTotalSimulacoesSucesso: number;
+  totalUsuarios: number;
+}
+
+// Função para buscar o ranking de usuários
+export async function fetchRanking(): Promise<UsuarioDTO[]> {
+  try {
+    // O endpoint correto é /usuarios/estatisticas
+    const response = await api.get<EstatisticasComRankingDTO>('/usuarios/estatisticas');
+    if (response.status >= 400) {
+      throw new Error('Erro ao buscar o ranking');
+    }
+    // Retorna apenas a lista de usuários da resposta
+    return response.data.pontuacaoUsuarios;
+  } catch (error) {
+    console.error('Erro ao chamar a API de ranking:', error);
+    throw error;
+  }
 }

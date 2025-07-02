@@ -73,16 +73,18 @@ export default function Ouro({ de, para, iter, minX, maxX, targetMin, targetMax 
     }
   }, [texture])
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (start && end && ref.current) {
-      setT((prev) => {
-        const novoT = Math.min(prev + 0.03, 1)
-        const atual = start.clone().lerp(end, novoT)
-        ref.current!.position.copy(atual)
-        return novoT
-      })
+      // Move a lógica de animação para fora do setState
+      // e usa o delta para uma animação mais suave e independente de frame rate
+      const t = ref.current.userData.t || 0;
+      const novoT = Math.min(t + delta * 2, 1); // Ajuste a velocidade multiplicando delta
+      ref.current.userData.t = novoT;
+
+      const atual = start.clone().lerp(end, novoT);
+      ref.current.position.copy(atual);
     }
-  })
+  });
 
   if (!start || !end || !texture) return null
 

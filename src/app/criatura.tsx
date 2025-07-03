@@ -46,7 +46,7 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
   const [isJumping, setIsJumping] = useState(false)
   const [jumpStartTime, setJumpStartTime] = useState(0)
   const [lastIteracao, setLastIteracao] = useState(iteracao)
-  const jumpDuration = 0.8
+  const jumpDuration = 0.6
 
   const isCluster = 'idsCriaturas' in criatura;
 

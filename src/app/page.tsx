@@ -62,7 +62,7 @@ export default function LoginPage() {
       localStorage.removeItem('user')
       setMode('login')
       setSuccessMessage('Conta deletada com sucesso.')
-    } catch (err) {
+    } catch {
       setError('Falha ao deletar a conta. Verifique suas credenciais.')
     }
   }

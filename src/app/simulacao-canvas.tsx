@@ -5,7 +5,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react'
 import { TextureLoader, DoubleSide, PerspectiveCamera, Vector3 } from 'three'
 import Ouro from './ouro'
 import Criatura from './criatura'
-import { CriaturaDTO, DadosSimulacao, ClusterDTO, GuardiaoDTO } from '@/api'
+import { CriaturaDTO, DadosSimulacao, ClusterDTO } from '@/api'
 
 interface SimulacaoCanvasProps {
   dados: DadosSimulacao[]
@@ -54,6 +54,15 @@ function Scene({
 
   const iter = dados[iteracao]
 
+  const allEntities = useMemo(() => {
+    if (!iter || !Array.isArray(iter.criaturas)) {
+      return [];
+    }
+    const creatures = iter.criaturas.map(c => ({ ...c, type: 'criatura' }));
+    const clusters = iter.clusters?.map(c => ({ ...c, type: 'cluster', idCriaturaRoubada: -1 })) || [];
+    return [...creatures, ...clusters];
+  }, [iter]);
+
   if (!iter) {
     console.error(`Iteração ${iteracao} não encontrada em:`, dados)
     return null
@@ -63,12 +72,6 @@ function Scene({
     console.error("Criaturas não é um array:", iter)
     return null
   }
-
-  const allEntities = useMemo(() => {
-    const creatures = iter.criaturas.map(c => ({ ...c, type: 'criatura' }));
-    const clusters = iter.clusters?.map(c => ({ ...c, type: 'cluster', idCriaturaRoubada: -1 })) || [];
-    return [...creatures, ...clusters];
-  }, [iter.criaturas, iter.clusters]);
 
   return (
     <>
@@ -95,17 +98,17 @@ function Scene({
       {iter.clusters?.map((cluster: ClusterDTO) => {
         const proximaIteracao = dados[iteracao + 1]
         const proximoCluster = proximaIteracao?.clusters.find(
-          (nextC: ClusterDTO) => nextC.idCluster === cluster.idCluster
+          (nextC: ClusterDTO) => nextC.id === cluster.id
         )
         const clusterAsCriatura = {
           ...cluster,
-          id: cluster.idCluster, 
-          ouro: cluster.ouroTotal,
+          id: cluster.id, 
+          ouro: cluster.ouro,
           idCriaturaRoubada: -1,
         }
         return (
           <Criatura
-            key={`cluster-${cluster.idCluster}`}
+            key={`cluster-${cluster.id}`}
             criatura={clusterAsCriatura}
             minX={minX}
             maxX={maxX}
@@ -236,10 +239,10 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
             <div className="mt-6">
               <h3 className="text-white text-lg font-bold mb-2">Clusters</h3>
               {iter.clusters.map((c: ClusterDTO) => (
-                <div key={c.idCluster} className="bg-gray-700 p-3 rounded-lg">
+                <div key={c.id} className="bg-gray-700 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-4 h-4 rounded-full bg-purple-500"></div>
-                    <span className="text-white font-bold">Cluster {c.idCluster}</span>
+                    <span className="text-white font-bold">Cluster {c.id}</span>
                   </div>
                   <div className="text-gray-300 text-sm space-y-1">
                     <p className="flex justify-between">
@@ -248,12 +251,12 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
                     </p>
                     <p className="flex justify-between">
                       <span>Ouro:</span>
-                      <span className="font-mono">{c.ouroTotal}</span>
+                      <span className="font-mono">{c.ouro}</span>
                     </p>
-                    <p className="flex justify-between">
+                    {/* <p className="flex justify-between">
                       <span>Criaturas:</span>
                       <span className="font-mono">{c.idsCriaturas.join(', ')}</span>
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               ))}

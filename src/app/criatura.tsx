@@ -38,7 +38,7 @@ const JUMP_FRAMES = [
   'Jump (12).png'
 ];
 
-export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, targetMax, scale = 3, displayText }: CriaturaProps) {
+export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, targetMax, scale = 3 }: CriaturaProps) {
   const ref = useRef<THREE.Sprite>(null)
   const groupRef = useRef<Group>(null)
   const [texture, setTexture] = useState<Texture | null>(null)
@@ -48,7 +48,7 @@ export default function Criatura({ criatura, minX, maxX, iteracao, targetMin, ta
   const [lastIteracao, setLastIteracao] = useState(iteracao)
   const jumpDuration = 0.6
 
-  const isCluster = 'idsCriaturas' in criatura;
+  // const isCluster = 'idsCriaturas' in criatura;
 
   useEffect(() => {
     

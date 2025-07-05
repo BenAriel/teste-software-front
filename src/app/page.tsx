@@ -55,6 +55,7 @@ export default function LoginPage() {
       setError('Falha no registro. O nome de usuário pode já estar em uso.')
     }
   }
+  
 
   const handleDelete = async () => {
     try {

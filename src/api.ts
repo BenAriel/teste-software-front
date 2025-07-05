@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const API_URL = 'http://localhost:8080/api/v1' // Changed port to 8080, the default for Spring Boot
+export const API_URL = 'http://testesoftware.onrender.com/api/v1' // Changed port to 8080, the default for Spring Boot
 
 export interface CriaturaDTO {
     id: number

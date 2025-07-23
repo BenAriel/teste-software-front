@@ -131,7 +131,7 @@ export default function EstatisticasPage() {
                   id = "usuario-avatar"
                   src={usuario.avatar} 
                   alt={`Avatar de ${usuario.login}`}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-400"
+                  className="w-64 h-68 rounded-full object-cover border-4 border-blue-400"
                   onError={(e) => (e.currentTarget.style.display = 'none')} // Oculta se a imagem não carregar
                 />
               )}

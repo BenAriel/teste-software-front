@@ -128,7 +128,7 @@ export default function LoginPage() {
                 Avatar (URL da imagem)
               </label>
               <input
-                id="avatar"
+                id="foto"
                 type="text"
                 value={avatar}
                 onChange={e => setAvatar(e.target.value)}
@@ -143,6 +143,7 @@ export default function LoginPage() {
           )}
           <button
             type="submit"
+            id="entrar"
             className={`w-full py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${mode === 'delete' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'}`}>
             {getButtonText()}
           </button>
@@ -152,6 +153,7 @@ export default function LoginPage() {
             <p>
               Não tem uma conta?{' '}
               <button
+                id="cadastro"
                 onClick={() => setMode('register')}
                 className="font-medium text-blue-600 hover:underline"
               >

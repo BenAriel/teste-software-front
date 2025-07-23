@@ -87,6 +87,7 @@ export default function SimulationPage() {
             Estatísticas
           </Link>
           <button
+            id="logout-button"
             onClick={handleLogout}
             className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
           >
@@ -133,6 +134,7 @@ export default function SimulationPage() {
             </div>
 
             <button
+              id = "iniciar-simulacao"
               type="submit"
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
             >

@@ -102,6 +102,7 @@ export default function EstatisticasPage() {
         <h2 className="text-2xl font-semibold mb-4 border-b-2 border-blue-500 pb-2">Estatísticas por Usuário</h2>
         <form onSubmit={handleBuscarUsuario} className="flex gap-4 mb-6">
           <input
+            id = "estatisticas-usuario-input"
             type="text"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
@@ -109,6 +110,7 @@ export default function EstatisticasPage() {
             className="flex-grow p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
+            id="estatisticas-usuario-button"
             type="submit"
             disabled={loadingUsuario}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500"
@@ -126,6 +128,7 @@ export default function EstatisticasPage() {
             <div className="flex items-center gap-6">
               {usuario.avatar && (
                 <img 
+                  id = "usuario-avatar"
                   src={usuario.avatar} 
                   alt={`Avatar de ${usuario.login}`}
                   className="w-24 h-24 rounded-full object-cover border-4 border-blue-400"

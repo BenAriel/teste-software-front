@@ -85,7 +85,7 @@ export default function EstatisticasPage() {
                     <td className="p-3 font-medium text-green-400">@{user.login}</td>
                     <td className="p-3">{user.pontuacao ?? 'N/A'}</td>
                     <td className="p-3">{user.totalSimulacoes ?? 'N/A'}</td>
-                    <td className="p-3 font-bold text-yellow-400">{typeof user.taxaSucesso === 'number' ? `${(user.taxaSucesso * 100).toFixed(2)}%` : 'N/A'}</td>
+                    <td className="p-3 font-bold text-yellow-400">{typeof user.taxaSucesso === 'number' ? `${(user.taxaSucesso).toFixed(2)}%` : 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,7 +138,7 @@ export default function EstatisticasPage() {
               <div className="grid grid-cols-1 gap-2">
                 <p><strong>Pontuação:</strong> {usuario.pontuacao ?? 'N/A'}</p>
                 <p><strong>Total de Simulações:</strong> {usuario.totalSimulacoes ?? 'N/A'}</p>
-                <p><strong>Taxa de Sucesso:</strong> {typeof usuario.taxaSucesso === 'number' ? `${(usuario.taxaSucesso * 100).toFixed(2)}%` : 'N/A'}</p>
+                <p><strong>Taxa de Sucesso:</strong> {typeof usuario.taxaSucesso === 'number' ? `${(usuario.taxaSucesso).toFixed(2)}%` : 'N/A'}</p>
               </div>
             </div>
           </div>

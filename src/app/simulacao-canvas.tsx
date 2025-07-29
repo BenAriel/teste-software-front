@@ -208,12 +208,14 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
 
   return (
     <div className="w-full h-[80vh] flex">
-      <div className="w-[300px] bg-gray-800 p-4 overflow-y-auto">
+      {/* DIV DA BARRA LATERAL MODIFICADA */}
+      <div className="w-[300px] bg-black/60 backdrop-blur-md p-4 overflow-y-auto rounded-lg">
         <h2 className="text-white text-xl font-bold mb-4">Informações da Iteração {iter.iteracao}</h2>
         <div className="space-y-4">
           <h3 className="text-white text-lg font-bold mb-2">Criaturas</h3>
           {iter.criaturas.map((c: CriaturaDTO) => (
-            <div key={c.id} className="bg-gray-700 p-3 rounded-lg">
+            // DIV DO CARD MODIFICADA
+            <div key={c.id} className="bg-black/30 p-3 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: `hsl(${c.id * 30}, 70%, 50%)` }}></div>
                 <span className="text-white font-bold">Criatura {c.id}</span>
@@ -229,7 +231,7 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
                 </p>
                 <p className="flex justify-between">
                   <span>Roubou de:</span>
-                  <span className="font-mono">{c.idCriaturaRoubada || 'Ninguém'}</span>
+                  <span className="font-mono">{c.idCriaturaRoubada ?? 'Ninguém'}</span>
                 </p>
               </div>
             </div>
@@ -239,7 +241,8 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
             <div className="mt-6">
               <h3 className="text-white text-lg font-bold mb-2">Clusters</h3>
               {iter.clusters.map((c: ClusterDTO) => (
-                <div key={c.id} className="bg-gray-700 p-3 rounded-lg">
+                // DIV DO CARD MODIFICADA
+                <div key={c.id} className="bg-black/30 p-3 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-4 h-4 rounded-full bg-purple-500"></div>
                     <span className="text-white font-bold">Cluster {c.id}</span>
@@ -253,10 +256,6 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
                       <span>Ouro:</span>
                       <span className="font-mono">{c.ouro}</span>
                     </p>
-                    {/* <p className="flex justify-between">
-                      <span>Criaturas:</span>
-                      <span className="font-mono">{c.idsCriaturas.join(', ')}</span>
-                    </p> */}
                   </div>
                 </div>
               ))}
@@ -266,7 +265,8 @@ export default function SimulacaoCanvas({ dados, onNovaSimulacao }: SimulacaoCan
           {iter.guardiao && (
             <div>
               <h3 className="text-white text-lg font-bold mb-2">Guardião</h3>
-              <div className="bg-gray-700 p-3 rounded-lg">
+              {/* DIV DO CARD MODIFICADA */}
+              <div className="bg-black/30 p-3 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                     <div className="w-4 h-4 rounded-full bg-yellow-400"></div>
                     <span className="text-white font-bold">Guardião {iter.guardiao.id}</span>

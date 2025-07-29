@@ -27,6 +27,14 @@ body {
   background-color: var(--background);
 }
 
+body {
+  background-image: url('/dinossauroPage.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 .container-principal {
   width: 100%;
   max-width: 1200px; /* ou o tamanho máximo que desejar */
